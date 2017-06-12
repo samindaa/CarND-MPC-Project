@@ -136,16 +136,25 @@ int main() {
             xyvals.row(i) = b_p.transpose();
           }
 
+          // CORRECTION
+          double delta = j[1]["steering_angle"];
+          double acceleration = j[1]["throttle"];
+          double latency = 0.10;
+          px = px + v * cos(psi) * latency;
+          py = py + v * sin(psi) * latency;
+          psi = psi + v * delta / 2.67 * latency;
+          v = v + acceleration * latency;
+
           // STATE
           Eigen::VectorXd state(6);
           state.fill(0.0);
 
           auto coeffs = polyfit(xyvals.col(0), xyvals.col(1), 3);
 
-          // TODO: calculate the cross track error
+          // Calculate the cross track error
           double cte = polyeval(coeffs, state(0)) - state(1);
-          // TODO: calculate the orientation error
-          double epsi = 0 - atan(coeffs[1] + coeffs[2] * 2.0 * std::pow(state(0), 1) +
+          // Calculate the orientation error
+          double epsi = 0.0 - atan(coeffs[1] + coeffs[2] * 2.0 * std::pow(state(0), 1) +
               coeffs[3] * 3.0 * std::pow(state(0), 2));
           state(3) = v;
           state(4) = cte;

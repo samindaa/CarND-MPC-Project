@@ -6,7 +6,7 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-const size_t N = 20;
+const size_t N = 12;
 const double dt = 0.05; // 100 ms
 
 // This value assumes the model presented in the classroom is used.
@@ -21,7 +21,7 @@ const double dt = 0.05; // 100 ms
 // This is the length from front to CoG that has a similar radius.
 const double Lf = 2.67;
 
-const double ref_v = 20; // TODO:
+const double ref_v = 60; // TODO:
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should  establish
@@ -66,14 +66,14 @@ class FG_eval {
 
     // Minimize the use of actuators.
     for (int t = 0; t < N - 1; t++) {
-      fg[0] += CppAD::pow(vars[delta_start + t], 2);
-      fg[0] += CppAD::pow(vars[a_start + t], 2);
+      fg[0] +=  20.0 * CppAD::pow(vars[delta_start + t], 2);
+      fg[0] +=  40.0 * CppAD::pow(vars[a_start + t], 2);
     }
 
     // Minimize the value gap between sequential actuations.
     for (int t = 0; t < N - 2; t++) {
-      fg[0] += 500.0 * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
-      fg[0] += 500.0 * CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
+      fg[0] += 600.0 * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
+      fg[0] += 600.0 * CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
     }
 
     //
@@ -307,7 +307,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
     assert(mpc_x_vals.size() == mpc_y_vals.size());
 
-    std::cout << "mpc_x_vals: " << mpc_x_vals.size() << std::endl;
+    //std::cout << "mpc_x_vals: " << mpc_x_vals.size() << std::endl;
 
     // TODO: Return the first actuator values. The variables can be accessed with
     // `solution.x[i]`.
