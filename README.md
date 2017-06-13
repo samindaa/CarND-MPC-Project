@@ -9,7 +9,7 @@ I have first finished each part of the quiz, CarND-MPC-Quizzes, which has been u
 as the reference implementation for this project. I have implemented the 
 car model, and setup the constraints to solve the optimization problem. 
 
-I have modified the reference implementation in two ways to solve the final project:
+I have modified the reference implementation in the following ways to solve the final project:
 
 1. The reference trajectory has been modeled using a 3rd order polynomial.
 1. All the calculations have been done on the car coordinate system. I have used the
