@@ -3,6 +3,91 @@ Self-Driving Car Engineer Nanodegree Program
 
 ---
 
+## Writeup (Saminda Aberyruwan)
+
+I have first finished each part of the quiz, CarND-MPC-Quizzes, which has been used
+as the reference implementation for this project. I have implemented the 
+car model, and setup the constraints to solve the optimization problem. 
+
+I have modified the reference implementation in two ways to solve the final project:
+
+1. The reference trajectory has been modeled using a 3rd order polynomial.
+1. All the calculations have been done on the car coordinate system. I have used the
+following coordinate transformation:
+``` c++
+    Eigen::MatrixXd org_to_car_rotation(2, 2);
+    org_to_car_rotation << std::cos(psi), -std::sin(psi),
+      std::sin(psi), std::cos(psi);
+    const auto org_to_car_rotation_tr = org_to_car_rotation.transpose();
+    
+    Eigen::VectorXd org_to_car_position(2);
+    org_to_car_position << px,
+      py;
+    
+    auto b_T_a = [&org_to_car_rotation_tr, &org_to_car_position](const Eigen::VectorXd &a_p) {
+    return org_to_car_rotation_tr * a_p - org_to_car_rotation_tr * org_to_car_position;
+    };
+    
+    ...
+    
+    for (size_t i = 0; i < ptsx.size(); ++i) {
+        Eigen::VectorXd a_p(2);
+        a_p << ptsx[i],
+            ptsy[i];
+        auto b_p = b_T_a(a_p);
+        xyvals.row(i) = b_p.transpose();
+    }
+```
+
+3. The optimization objective's components have been multiplied with weights
+to keep the car within the bounds of the lane, and maintain 45 mph throughout. I have
+the following objective function:
+
+``` c++
+    // The cost is stored is the first element of `fg`.
+    // Any additions to the cost should be added to `fg[0]`.
+    fg[0] = 0;
+
+    // Reference State Cost
+    // TODO: Define the cost related the reference state and
+    // any anything you think may be beneficial.
+
+    // The part of the cost based on the reference state.
+    for (int t = 0; t < N; t++) {
+      fg[0] += CppAD::pow(vars[cte_start + t], 2);
+      fg[0] += CppAD::pow(vars[epsi_start + t], 2);
+      fg[0] += CppAD::pow(vars[v_start + t] - ref_v, 2);
+    }
+
+    // Minimize the use of actuators.
+    for (int t = 0; t < N - 1; t++) {
+      fg[0] +=  20.0 * CppAD::pow(vars[delta_start + t], 2);
+      fg[0] +=  40.0 * CppAD::pow(vars[a_start + t], 2);
+    }
+
+    // Minimize the value gap between sequential actuations.
+    for (int t = 0; t < N - 2; t++) {
+      fg[0] += 600.0 * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
+      fg[0] += 600.0 * CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
+    }
+```
+4. The influence of the latency has been mitigate with running a simulation 
+using the vehicle model starting from the current state for the duration of the latency. 
+The resulting state from the simulation is the new initial state for MPC.
+I have also consulted the discussion [here](https://discussions.udacity.com/t/how-to-incorporate-latency-into-the-model/257391/4).
+I have used the following transformation to account of the latency:
+
+``` c++
+    double delta = j[1]["steering_angle"];
+    double acceleration = j[1]["throttle"];
+    double latency = 0.10;
+    px = px + v * 0.44704 * cos(psi) * latency;
+    py = py + v * 0.44704 * sin(psi) * latency;
+    psi = psi + v * 0.44704 * delta / 2.67 * latency;
+    v = v * 0.44704 + acceleration * latency;
+    v /= 0.44704;    
+```
+where 1 mph is 0.44704 m/s, and the length from front to CoG is 2.67.
 ## Dependencies
 
 * cmake >= 3.5
