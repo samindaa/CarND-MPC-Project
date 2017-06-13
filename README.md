@@ -39,9 +39,9 @@ following coordinate transformation:
     }
 ```
 
-3. The optimization objective's components have been multiplied with weights
+3. The components of the objective function have been multiplied with weights
 to keep the car within the bounds of the lane, and maintain 45 mph throughout. I have
-the following objective function:
+use the following objective function:
 
 ``` c++
     // The cost is stored is the first element of `fg`.
