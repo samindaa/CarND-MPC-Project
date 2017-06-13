@@ -3,7 +3,7 @@ Self-Driving Car Engineer Nanodegree Program
 
 ---
 
-## Writeup (Saminda Aberyruwan)
+## Writeup (Saminda Abeyruwan)
 
 I have first finished each part of the quiz, CarND-MPC-Quizzes, which has been used
 as the reference implementation for this project. I have implemented the 
