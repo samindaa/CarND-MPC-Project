@@ -87,7 +87,9 @@ I have used the following transformation to account of the latency:
     v = v * 0.44704 + acceleration * latency;
     v /= 0.44704;    
 ```
-where 1 mph is 0.44704 m/s, and the length from front to CoG is 2.67.
+where 1 mph is 0.44704 m/s, and the length from the front to the CoG is 2.67.
+5. I have used N = 8 and dt = 0.1 to construct the receding horizon. The duty cycle of the
+ main loop is approximately 100ms. Therefore, I have used 0.1 seconds to dt.
 ## Dependencies
 
 * cmake >= 3.5
