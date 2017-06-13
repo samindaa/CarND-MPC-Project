@@ -92,7 +92,7 @@ int main() {
           double px = j[1]["x"];
           double py = j[1]["y"];
           double psi = j[1]["psi"];
-          double v = j[1]["speed"];
+          double v = j[1]["speed"]; // mph
 
           Eigen::MatrixXd org_to_car_rotation(2, 2);
           org_to_car_rotation << std::cos(psi), -std::sin(psi),
@@ -136,14 +136,15 @@ int main() {
             xyvals.row(i) = b_p.transpose();
           }
 
-          // CORRECTION
+          // LATENCY CORRECTION
           double delta = j[1]["steering_angle"];
           double acceleration = j[1]["throttle"];
           double latency = 0.10;
-          px = px + v * cos(psi) * latency;
-          py = py + v * sin(psi) * latency;
-          psi = psi + v * delta / 2.67 * latency;
-          v = v + acceleration * latency;
+          px = px + v * 0.44704 * cos(psi) * latency;
+          py = py + v * 0.44704 * sin(psi) * latency;
+          psi = psi + v * 0.44704 * delta / 2.67 * latency;
+          v = v * 0.44704 + acceleration * latency;
+          v /= 0.44704;
 
           // STATE
           Eigen::VectorXd state(6);

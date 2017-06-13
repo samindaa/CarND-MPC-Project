@@ -6,8 +6,8 @@
 using CppAD::AD;
 
 // TODO: Set the timestep length and duration
-const size_t N = 12;
-const double dt = 0.05; // 100 ms
+const size_t N = 8;
+const double dt = 0.1; // 100 ms
 
 // This value assumes the model presented in the classroom is used.
 //
@@ -21,7 +21,7 @@ const double dt = 0.05; // 100 ms
 // This is the length from front to CoG that has a similar radius.
 const double Lf = 2.67;
 
-const double ref_v = 60; // TODO:
+const double ref_v = 80;
 
 // The solver takes all the state variables and actuator
 // variables in a singular vector. Thus, we should  establish
